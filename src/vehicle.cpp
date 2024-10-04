@@ -3880,10 +3880,7 @@ int vehicle::max_water_velocity( const bool fueled ) const
 int vehicle::max_rotor_velocity( const bool fueled ) const
 {
     const double max_air_mps = std::sqrt( lift_thrust_of_rotorcraft( fueled ) / coeff_air_drag() );
-    // helicopters just cannot go over 250mph at very maximum
-    // weird things start happening to their rotors if they do.
-    // due to the rotor tips going supersonic.
-    return std::min( 25501, mps_to_vmiph( max_air_mps ) );
+    return mps_to_vmiph( max_air_mps );
 }
 
 int vehicle::max_velocity( const bool fueled ) const
