@@ -1,0 +1,19 @@
+[
+  {
+    "type": "GENERIC",
+    "id": "embued_coin",
+    "category": "valuables",
+    "name": { "str": "embued coin" },
+    "description": "Magic money.",
+    "price": "900 USD",
+    "price_postapoc": "25 USD",
+    "stackable": true,
+    "//": "Low carat gold alloy for hardness, but it's still the best part of an ounce of gold.  Yes, the weight is correct for the volume.",
+    "weight": "28 g",
+    "to_hit": -3,
+    "color": "brown",
+    "symbol": "$",
+    "material": [ "gold" ],
+    "volume": "2 ml"
+  }
+]

@@ -9,7 +9,7 @@
     "size": 5,
     "power": 100,
     "food_supply": 115200,
-    "wealth": 100000,
+    "wealth": 10000000,
     "currency": "embued_coin",
     "relations": {
       "lobby_beggars": {
