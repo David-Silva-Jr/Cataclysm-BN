@@ -1,5 +1,12 @@
 #include "catalua_bindings.h"
 
+#include <ranges>
+
+#include "itype.h"
+#include "mtype.h"
+#include "monfaction.h"
+#include "translations.h"
+
 #include "catalua_bindings_utils.h"
 #include "catalua_luna.h"
 #include "catalua_luna_doc.h"
@@ -21,7 +28,7 @@ void reg_faction( sol::state &lua )
         DOC( "Do you know about this faction?" );
         SET_FX( known_by_u );
         DOC( "ID of the faction." );
-        SET_FX( id );
+        SET_FX( id ); // faction_id
         DOC( "Raw description of the faction." );
         SET_FX( desc );
         DOC( "How big is the sphere of influence of the faction?" );
@@ -37,20 +44,20 @@ void reg_faction( sol::state &lua )
         DOC( "ID of the faction currency." );
         SET_FX( currency );
         DOC( "What a person have with the faction?" );
-        SET_FX( relations );
+        SET_FX( relations ); // std::map<std::string, std::bitset<npc_factions::rel_types>>
         DOC( "mon_faction_id of the monster faction; defaults to human." );
-        SET_FX( mon_faction );
+        SET_FX( mon_faction ); // mfaction_str_id
         DOC( "Epilogue strings." );
-        SET_FX( epilogue_data );
+        SET_FX( epilogue_data ); // std::set<std::tuple<int, int, snippet_id>>
 
         DOC( "Getter for desc." );
         SET_FX( describe );
         DOC( "Get faction epilogues." );
-        SET_FX( epilogue );
+        SET_FX( epilogue ); // std::vector<std::string>
         DOC( "Get a description of the faction's food supply." );
         SET_FX( food_supply_text );
         DOC( "Get the color of the food supply text." );
-        SET_FX( food_supply_color );
+        SET_FX( food_supply_color ); // nc_color
 
         DOC( "Does the person have a given relation with a faction?" );
         luna::set_fx( ut, "has_relationship", [](
@@ -65,20 +72,20 @@ void reg_faction( sol::state &lua )
                           character_id guy_id,
                           std::string guy_name,
                           bool known
-        ) { return fac.add_to_membership( guy_id, guy_name, known ); } );
+        ) { fac.add_to_membership( guy_id, guy_name, known ); } );
 
         DOC( "Removes a person from the faction." );
         luna::set_fx( ut, "remove_member", [](
                           faction & fac,
                           character_id guy_id
-        ) { return fac.remove_member( guy_id ); } );
+        ) { fac.remove_member( guy_id ); } );
 
         DOC( "Unused as far as I can tell. Can be reworked to store inter-faction relations?" );
-        SET_FX( opinion_of );
+        SET_FX( opinion_of ); // std::vector<int>
         DOC( "Did the faction validate properly?" );
         SET_FX( validated );
         DOC( "List of faction members." );
-        SET_FX( members );
+        SET_FX( members ); // std::map<character_id, std::pair<std::string, bool>>
     }
 #undef UT_CLASS
 }
@@ -90,11 +97,19 @@ void reg_faction_manager( sol::state &lua )
         sol::usertype<faction_manager> ut = luna::new_usertype<faction_manager>( lua, luna::no_bases, luna::no_constructor );
 
         DOC( "Deletes all factions." );
-        SET_FX( clear );
+        luna::set_fx( ut, "clear", [](
+            faction_manager &fac_manager
+        ){ fac_manager.clear(); } );
+
         DOC( "Creates factions if none exist." );
-        SET_FX( create_if_needed );
+        luna::set_fx( ut, "create_if_needed", [](
+            faction_manager &fac_manager
+        ){ fac_manager.create_if_needed(); } );
+
         DOC( "Displays faction menu (I think)" );
-        SET_FX( display );
+        luna::set_fx( ut, "display", [](
+            faction_manager &fac_manager
+        ){ fac_manager.display(); } );
 
         DOC( "Creates a new faction based on a faction template." );
         luna::set_fx( ut, "add_new_faction", [](
@@ -108,11 +123,11 @@ void reg_faction_manager( sol::state &lua )
         luna::set_fx( ut, "remove_faction", [](
                           faction_manager & fac_manager,
                           faction_id id
-        ) { return fac_manager.remove_faction( id ); } );
+        ) { fac_manager.remove_faction( id ); } );
 
 
         DOC( "Returns a list of factions." );
-        SET_FX( all );
+        SET_FX( all ); // std::map<faction_id, faction>
 
         DOC( "Gets a faction by id." );
         luna::set_fx( ut, "get", [](
