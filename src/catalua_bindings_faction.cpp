@@ -8,7 +8,7 @@
 
 void reg_faction( sol::state &lua )
 {
-    #define UT_CLASS faction
+#define UT_CLASS faction
     {
         sol::usertype<faction> ut = luna::new_usertype<faction>( lua, luna::no_bases, luna::no_constructor );
 
@@ -54,23 +54,23 @@ void reg_faction( sol::state &lua )
 
         DOC( "Does the person have a given relation with a faction?" );
         luna::set_fx( ut, "has_relationship", [](
-            faction &fac,
-            faction_id guy_id,
-            npc_factions::relationship flag
-        ) { return fac.has_relationship(guy_id, flag); } );
+                          faction & fac,
+                          faction_id guy_id,
+                          npc_factions::relationship flag
+        ) { return fac.has_relationship( guy_id, flag ); } );
 
         DOC( "Add person to faction. Bool is whether or not the player knows them." );
         luna::set_fx( ut, "add_to_membership", [](
-            faction &fac,
-            character_id guy_id,
-            std::string guy_name,
-            bool known
+                          faction & fac,
+                          character_id guy_id,
+                          std::string guy_name,
+                          bool known
         ) { return fac.add_to_membership( guy_id, guy_name, known ); } );
 
         DOC( "Removes a person from the faction." );
         luna::set_fx( ut, "remove_member", [](
-            faction &fac,
-            character_id guy_id
+                          faction & fac,
+                          character_id guy_id
         ) { return fac.remove_member( guy_id ); } );
 
         DOC( "Unused as far as I can tell. Can be reworked to store inter-faction relations?" );
@@ -80,12 +80,12 @@ void reg_faction( sol::state &lua )
         DOC( "List of faction members." );
         SET_FX( members );
     }
-    #undef UT_CLASS
+#undef UT_CLASS
 }
 
 void reg_faction_manager( sol::state &lua )
 {
-    #define UT_CLASS faction_manager
+#define UT_CLASS faction_manager
     {
         sol::usertype<faction_manager> ut = luna::new_usertype<faction_manager>( lua, luna::no_bases, luna::no_constructor );
 
@@ -98,16 +98,16 @@ void reg_faction_manager( sol::state &lua )
 
         DOC( "Creates a new faction based on a faction template." );
         luna::set_fx( ut, "add_new_faction", [](
-            faction_manager &fac_manager,
-            std::string name_new,
-            faction_id id_new,
-            faction_id template_id
+                          faction_manager & fac_manager,
+                          std::string name_new,
+                          faction_id id_new,
+                          faction_id template_id
         ) { return fac_manager.add_new_faction( name_new, id_new, template_id ); } );
 
         DOC( "Deletes a given faction." );
         luna::set_fx( ut, "remove_faction", [](
-            faction_manager &fac_manager,
-            faction_id id
+                          faction_manager & fac_manager,
+                          faction_id id
         ) { return fac_manager.remove_faction( id ); } );
 
 
@@ -116,10 +116,10 @@ void reg_faction_manager( sol::state &lua )
 
         DOC( "Gets a faction by id." );
         luna::set_fx( ut, "get", [](
-            faction_manager &fac_manager,
-            faction_id id,
-            bool complain
-        ){ return fac_manager.get(id, complain); } );
+                          faction_manager & fac_manager,
+                          faction_id id,
+                          bool complain
+        ) { return fac_manager.get( id, complain ); } );
     }
-    #undef UT_CLASS
+#undef UT_CLASS
 }
