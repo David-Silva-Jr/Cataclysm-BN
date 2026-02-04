@@ -94,18 +94,18 @@ void cata::detail::reg_faction_manager( sol::state &lua )
 
         DOC( "Deletes all factions." );
         luna::set_fx( ut, "clear", [](
-            faction_manager &fac_manager
-        ){ fac_manager.clear(); } );
+                          faction_manager &fac_manager
+        ) { fac_manager.clear(); } );
 
         DOC( "Creates factions if none exist." );
         luna::set_fx( ut, "create_if_needed", [](
-            faction_manager &fac_manager
-        ){ fac_manager.create_if_needed(); } );
+                          faction_manager &fac_manager
+        ) { fac_manager.create_if_needed(); } );
 
         DOC( "Displays faction menu (I think)" );
         luna::set_fx( ut, "display", [](
-            faction_manager &fac_manager
-        ){ fac_manager.display(); } );
+                          faction_manager &fac_manager
+        ) { fac_manager.display(); } );
 
         DOC( "Creates a new faction based on a faction template." );
         luna::set_fx( ut, "add_new_faction", [](
