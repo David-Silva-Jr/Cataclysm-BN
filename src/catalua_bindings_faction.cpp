@@ -4,6 +4,7 @@
 #include "mtype.h"
 #include "monfaction.h"
 #include "translations.h"
+#include "string_id.h"
 
 #include "catalua_bindings_utils.h"
 #include "catalua_luna.h"
@@ -135,10 +136,7 @@ void cata::detail::reg_faction_manager( sol::state &lua )
         DOC( "Get player faction." );
         luna::set_fx( ut, "get_player_faction", [](
                           faction_manager &fac_manager
-                      )
-        {
-            return fac_manager.get( faction_id( ( "your_followers" ) ), true );
-        } );
+        ) { return fac_manager.get( faction_id( ( "your_followers" ) ), true ); } );
     }
 #undef UT_CLASS
 }
