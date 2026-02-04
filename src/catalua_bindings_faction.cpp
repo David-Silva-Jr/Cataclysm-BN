@@ -57,14 +57,14 @@ void cata::detail::reg_faction( sol::state &lua )
 
         DOC( "Does the person have a given relation with a faction?" );
         luna::set_fx( ut, "has_relationship", [](
-                          faction &fac,
+                          faction & fac,
                           faction_id guy_id,
                           npc_factions::relationship flag
         ) { return fac.has_relationship( guy_id, flag ); } );
 
         DOC( "Add person to faction. Bool is whether or not the player knows them." );
         luna::set_fx( ut, "add_to_membership", [](
-                          faction &fac,
+                          faction & fac,
                           character_id guy_id,
                           std::string guy_name,
                           bool known
@@ -72,7 +72,7 @@ void cata::detail::reg_faction( sol::state &lua )
 
         DOC( "Removes a person from the faction." );
         luna::set_fx( ut, "remove_member", [](
-                          faction &fac,
+                          faction & fac,
                           character_id guy_id
         ) { fac.remove_member( guy_id ); } );
 
@@ -117,7 +117,7 @@ void cata::detail::reg_faction_manager( sol::state &lua )
 
         DOC( "Deletes a given faction." );
         luna::set_fx( ut, "remove_faction", [](
-                          faction_manager &fac_manager,
+                          faction_manager & fac_manager,
                           faction_id id
         ) { fac_manager.remove_faction( id ); } );
 
@@ -127,16 +127,17 @@ void cata::detail::reg_faction_manager( sol::state &lua )
 
         DOC( "Gets a faction by id." );
         luna::set_fx( ut, "get", [](
-                          faction_manager &fac_manager,
+                          faction_manager & fac_manager,
                           faction_id id,
                           bool complain
         ) { return fac_manager.get( id, complain ); } );
 
         DOC( "Get player faction." );
         luna::set_fx( ut, "get_player_faction", [](
-            faction_manager &fac_manager
-        ){ 
-            return fac_manager.get( faction_id( ("your_followers") ), true); 
+                          faction_manager &fac_manager
+                      )
+        {
+            return fac_manager.get( faction_id( ( "your_followers" ) ), true );
         } );
     }
 #undef UT_CLASS
