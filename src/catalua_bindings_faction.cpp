@@ -1,7 +1,5 @@
 #include "catalua_bindings.h"
 
-#include <ranges>
-
 #include "itype.h"
 #include "mtype.h"
 #include "monfaction.h"
@@ -13,7 +11,7 @@
 
 #include "faction.h"
 
-void reg_faction( sol::state &lua )
+void cata::detail::reg_faction( sol::state &lua )
 {
 #define UT_CLASS faction
     {
@@ -28,7 +26,7 @@ void reg_faction( sol::state &lua )
         DOC( "Do you know about this faction?" );
         SET_FX( known_by_u );
         DOC( "ID of the faction." );
-        SET_FX( id ); // faction_id
+        SET_FX( id );
         DOC( "Raw description of the faction." );
         SET_FX( desc );
         DOC( "How big is the sphere of influence of the faction?" );
@@ -44,31 +42,29 @@ void reg_faction( sol::state &lua )
         DOC( "ID of the faction currency." );
         SET_FX( currency );
         DOC( "What a person have with the faction?" );
-        SET_FX( relations ); // std::map<std::string, std::bitset<npc_factions::rel_types>>
+        SET_FX( relations );
         DOC( "mon_faction_id of the monster faction; defaults to human." );
-        SET_FX( mon_faction ); // mfaction_str_id
-        DOC( "Epilogue strings." );
-        SET_FX( epilogue_data ); // std::set<std::tuple<int, int, snippet_id>>
+        SET_FX( mon_faction );
 
         DOC( "Getter for desc." );
         SET_FX( describe );
         DOC( "Get faction epilogues." );
-        SET_FX( epilogue ); // std::vector<std::string>
+        SET_FX( epilogue );
         DOC( "Get a description of the faction's food supply." );
         SET_FX( food_supply_text );
         DOC( "Get the color of the food supply text." );
-        SET_FX( food_supply_color ); // nc_color
+        SET_FX( food_supply_color );
 
         DOC( "Does the person have a given relation with a faction?" );
         luna::set_fx( ut, "has_relationship", [](
-                          faction & fac,
+                          faction &fac,
                           faction_id guy_id,
                           npc_factions::relationship flag
         ) { return fac.has_relationship( guy_id, flag ); } );
 
         DOC( "Add person to faction. Bool is whether or not the player knows them." );
         luna::set_fx( ut, "add_to_membership", [](
-                          faction & fac,
+                          faction &fac,
                           character_id guy_id,
                           std::string guy_name,
                           bool known
@@ -76,21 +72,21 @@ void reg_faction( sol::state &lua )
 
         DOC( "Removes a person from the faction." );
         luna::set_fx( ut, "remove_member", [](
-                          faction & fac,
+                          faction &fac,
                           character_id guy_id
         ) { fac.remove_member( guy_id ); } );
 
         DOC( "Unused as far as I can tell. Can be reworked to store inter-faction relations?" );
-        SET_FX( opinion_of ); // std::vector<int>
+        SET_FX( opinion_of );
         DOC( "Did the faction validate properly?" );
         SET_FX( validated );
         DOC( "List of faction members." );
-        SET_FX( members ); // std::map<character_id, std::pair<std::string, bool>>
+        SET_FX( members );
     }
 #undef UT_CLASS
 }
 
-void reg_faction_manager( sol::state &lua )
+void cata::detail::reg_faction_manager( sol::state &lua )
 {
 #define UT_CLASS faction_manager
     {
@@ -121,20 +117,27 @@ void reg_faction_manager( sol::state &lua )
 
         DOC( "Deletes a given faction." );
         luna::set_fx( ut, "remove_faction", [](
-                          faction_manager & fac_manager,
+                          faction_manager &fac_manager,
                           faction_id id
         ) { fac_manager.remove_faction( id ); } );
 
 
         DOC( "Returns a list of factions." );
-        SET_FX( all ); // std::map<faction_id, faction>
+        SET_FX( all );
 
         DOC( "Gets a faction by id." );
         luna::set_fx( ut, "get", [](
-                          faction_manager & fac_manager,
+                          faction_manager &fac_manager,
                           faction_id id,
                           bool complain
         ) { return fac_manager.get( id, complain ); } );
+
+        DOC( "Get player faction." );
+        luna::set_fx( ut, "get_player_faction", [](
+            faction_manager &fac_manager
+        ){ 
+            return fac_manager.get( faction_id( ("your_followers") ), true); 
+        } );
     }
 #undef UT_CLASS
 }

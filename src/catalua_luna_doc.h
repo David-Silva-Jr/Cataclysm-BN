@@ -1,5 +1,8 @@
 #pragma once
 
+#include <set>
+#include <tuple>
+
 #include "calendar.h"
 #include "catalua_luna.h"
 #include "mission.h"
@@ -103,6 +106,8 @@ struct explosion_data;
 struct requirement_data;
 class inventory;
 class known_magic;
+class faction_manager;
+class translation;
 
 namespace units
 {
@@ -229,6 +234,7 @@ LUNA_ID( body_part_type, "BodyPartType" )
 LUNA_ID( disease_type, "DiseaseType" )
 LUNA_ID( effect_type, "EffectType" )
 LUNA_ID( faction, "Faction" )
+LUNA_ID( faction_manager, "FactionManager" )
 LUNA_ID( field_type, "FieldType" )
 LUNA_ID( furn_t, "Furn" )
 LUNA_ID( itype, "Itype" )
