@@ -62,7 +62,7 @@ void cata::detail::reg_faction( sol::state &lua )
                           faction &fac
         ) { return fac.id; } );
 
-        DOC( "Does the person have a given relation with a faction?" );
+        DOC( "Does the faction guy_id have a given relation with this faction?" );
         luna::set_fx( ut, "has_relationship", [](
                           faction & fac,
                           faction_id guy_id,
@@ -83,7 +83,7 @@ void cata::detail::reg_faction( sol::state &lua )
                           character_id guy_id
         ) { fac.remove_member( guy_id ); } );
 
-        DOC( "Unused as far as I can tell. Can be reworked to store inter-faction relations?" );
+        DOC( "Unused as far as I can tell." );
         SET_FX( opinion_of );
         DOC( "Did the faction validate properly?" );
         SET_FX( validated );
