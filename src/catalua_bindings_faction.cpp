@@ -59,7 +59,7 @@ void cata::detail::reg_faction( sol::state &lua )
         // Why was the test not failing before I created this file?
         DOC( "It looks like a test requires this." );
         luna::set_fx( ut, "str_id", [](
-                          faction & fac
+                          faction &fac
         ) { return fac.id; } );
 
         DOC( "Does the person have a given relation with a faction?" );
