@@ -106,6 +106,8 @@ struct explosion_data;
 struct requirement_data;
 class inventory;
 class known_magic;
+class faction_template;
+class faction;
 class faction_manager;
 class translation;
 
@@ -233,6 +235,7 @@ LUNA_ID( bionic_data, "BionicData" )
 LUNA_ID( body_part_type, "BodyPartType" )
 LUNA_ID( disease_type, "DiseaseType" )
 LUNA_ID( effect_type, "EffectType" )
+LUNA_ID( faction_template, "FactionTemplate" )
 LUNA_ID( faction, "Faction" )
 LUNA_ID( faction_manager, "FactionManager" )
 LUNA_ID( field_type, "FieldType" )

@@ -56,6 +56,12 @@ void cata::detail::reg_faction( sol::state &lua )
         DOC( "Get the color of the food supply text." );
         SET_FX( food_supply_color );
 
+        // Why was the test not failing before I created this file?
+        DOC( "It looks like a test requires this." );
+        luna::set_fx( ut, "str_id", [](
+                          faction & fac
+        ) { return fac.id; } );
+
         DOC( "Does the person have a given relation with a faction?" );
         luna::set_fx( ut, "has_relationship", [](
                           faction & fac,
