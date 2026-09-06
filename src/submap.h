@@ -162,6 +162,9 @@ class submap : maptile_soa<SEEX, SEEY>
             is_uniform = false;
             emitter_cache = std::nullopt;
             ter[p.x()][p.y()] = terr;
+            if( terr->trap != tr_null ) {
+                trap_cache.push_back( p );
+            }
         }
 
         void set_all_ter( const ter_id &terr ) {
@@ -299,6 +302,7 @@ class submap : maptile_soa<SEEX, SEEY>
         // Entries may be stale (tile no longer has the relevant data); callers must validate.
         // A stale entry is benign — it just costs a cheap branch on iteration.
         // trap_cache: positions of any non-null trap; rebuilt incrementally via set_trap.
+        // NOTE: can be terrain traps too
         std::vector<point_sm_ms> trap_cache;
         // field_cache: positions of tiles with active fields; compacted after each
         // processing pass to remove positions whose fields have fully decayed.
