@@ -613,11 +613,6 @@ void map::on_submap_loaded( const tripoint_abs_sm &p, const dimension_id &dim_id
     // already-resident submaps (e.g. game::load_map() after m.load() cleared the
     // list, or submap_loader.update() firing for the bubble), and funnel_locations_
     // is a vector with no natural dedup — a double entry would fill at 2x rate (#10171).
-    //
-    // Scan every tile, not just trap_cache: funnels attached to terrain (e.g. gutter
-    // downspouts, whose funnel is a ter_t::trap) never go through set_trap() and so
-    // are absent from trap_cache. get_effective_trap() resolves terrain-attached
-    // traps first, then standalone ones.
     if( sm != nullptr && !sm->trap_cache.empty() ) {
         for( const point_sm_ms &lp : sm->trap_cache ) {
             if( sm->get_effective_trap( lp ).obj().is_funnel() ) {
