@@ -104,6 +104,18 @@ class submap : maptile_soa<SEEX, SEEY>
             return trp[p.x()][p.y()];
         }
 
+        /// The effective trap at a tile: a terrain-attached trap (ter_t::trap) takes
+        /// precedence over a standalone trap in the trp array. Mirrors map::tr_at().
+        /// Funnels attached to terrain (e.g. gutter downspouts) are only reachable
+        /// through this, since they never land in trap_cache.
+        trap_id get_effective_trap( const point_sm_ms &p ) const {
+            const trap_id ter_trap = get_ter( p ).obj().trap;
+            if( ter_trap != tr_null ) {
+                return ter_trap;
+            }
+            return get_trap( p );
+        }
+
         void set_trap( const point_sm_ms &p, trap_id trap ) {
             is_uniform = false;
             trp[p.x()][p.y()] = trap;
