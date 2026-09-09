@@ -586,7 +586,7 @@ void use_item( avatar &you, item &used )
     you.last_item = used.typeId();
 
     if( used.is_tool() ) {
-        if( !used.type->has_use() ) {
+        if( !used.has_use() ) {
             add_msg( _( "You can't do anything interesting with your %s." ), used.tname() );
             return;
         }

@@ -9125,7 +9125,15 @@ void item::gun_cycle_mode()
 
 bool item::has_use() const
 {
-    return type->has_use();
+    if( type->has_use() ) {
+        return true;
+    }
+    // Mod flags can inject use methods not present on the type itself.
+    // e.g. ADD_UPS_TOGGLE (from battery_ups_toggle mod) → TOGGLE_UPS_CHARGING
+    if( has_flag( flag_ADD_UPS_TOGGLE ) && !type->has_flag( flag_ADD_UPS_TOGGLE ) ) {
+        return true;
+    }
+    return false;
 }
 
 const use_function *item::get_use( const std::string &use_name ) const
