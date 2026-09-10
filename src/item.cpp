@@ -9135,6 +9135,14 @@ auto item::get_flag_injected_use_methods() const -> std::map<std::string, use_fu
     auto candidate_flags = item_tags;
     auto mods = is_gun() ? gunmods() : toolmods();
     for( const item *mod : mods ) {
+        // A mod's flags live on its type (e.g. "flags": [ ... ] in the TOOLMOD JSON),
+        // not on the mod instance. Mirror item::has_flag, which checks both the mod's
+        // type flags and its instance flags.
+        for( const flag_id &f : mod->type->item_tags ) {
+            if( json_flag::get( f.str() ).inherit() ) {
+                candidate_flags.insert( f );
+            }
+        }
         for( const flag_id &f : mod->item_tags ) {
             if( json_flag::get( f.str() ).inherit() ) {
                 candidate_flags.insert( f );
