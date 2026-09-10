@@ -9125,15 +9125,33 @@ void item::gun_cycle_mode()
 
 bool item::has_use() const
 {
-    if( type->has_use() ) {
-        return true;
+    return type->has_use() || !get_flag_injected_use_methods().empty();
+}
+
+auto item::get_flag_injected_use_methods() const -> std::map<std::string, use_function>
+{
+    auto result = std::map<std::string, use_function> {};
+    // Collect flags from the item itself and its attached mods (guns or tools).
+    auto candidate_flags = item_tags;
+    auto mods = is_gun() ? gunmods() : toolmods();
+    for( const item *mod : mods ) {
+        for( const flag_id &f : mod->item_tags ) {
+            if( json_flag::get( f.str() ).inherit() ) {
+                candidate_flags.insert( f );
+            }
+        }
     }
-    // Mod flags can inject use methods not present on the type itself.
-    // e.g. ADD_UPS_TOGGLE (from battery_ups_toggle mod) → TOGGLE_UPS_CHARGING
-    if( has_flag( flag_ADD_UPS_TOGGLE ) && !type->has_flag( flag_ADD_UPS_TOGGLE ) ) {
-        return true;
+    for( const flag_id &f : candidate_flags ) {
+        if( type->has_flag( f ) ) {
+            continue;
+        }
+        const auto &def = json_flag::get( f.str() );
+        if( def.use_method().empty() ) {
+            continue;
+        }
+        result[def.use_method()] = item_controller->usage_from_string( def.use_method() );
     }
-    return false;
+    return result;
 }
 
 const use_function *item::get_use( const std::string &use_name ) const
