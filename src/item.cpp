@@ -9134,7 +9134,7 @@ auto item::get_flag_injected_use_methods() const -> std::map<std::string, use_fu
     auto candidate_flags = item_tags;
     auto mods = is_gun() ? gunmods() : toolmods();
 
-    // There's similar logic in has_flag, but it uses scary recursion and a nested function. Also, 
+    // There's similar logic in has_flag, but it uses scary recursion and a nested function. Also,
     // it checks if a specific flag exists on an item, where this method GETS all the flags on
     // an item
     for( const item *mod : mods ) {
