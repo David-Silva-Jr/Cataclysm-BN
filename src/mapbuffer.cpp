@@ -179,6 +179,7 @@ auto temperature_flag_at_tile( const submap &sm, const point_sm_ms &local ) -> t
         .root_cellar = sm.get_ter( local ) == t_rootcellar,
         .fridge = furn.has_flag( TFLAG_FRIDGE ),
         .freezer = furn.has_flag( TFLAG_FREEZER ),
+        .incubator = furn.has_flag( TFLAG_INCUBATOR ),
     } );
 }
 
