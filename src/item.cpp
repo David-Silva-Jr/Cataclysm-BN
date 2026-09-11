@@ -2118,6 +2118,10 @@ void item::food_info( const item *food_item, std::vector<iteminfo> &info,
             } else {
                 switch( temperature ) {
                     case temperature_flag::TEMP_NORMAL:
+                    case temperature_flag::TEMP_INCUBATOR: {
+                        temperature_description = _( "* Current storage conditions <bad>accelerate</bad> this "
+                                                    "item\'s decay. It will go bad in <info>%s</info>." );
+                    }
                     case temperature_flag::TEMP_HEATER: {
                         temperature_description = _( "* Current storage conditions <bad>do not</bad> "
                                                      "protect this item from rot." );
@@ -6600,6 +6604,8 @@ auto temperature_flag_to_highest_temperature( temperature_flag temperature ) -> 
         case temperature_flag::TEMP_NORMAL:
         case temperature_flag::TEMP_HEATER:
             return units::temperature_max;
+        case temperature_flag::TEMP_INCUBATOR:
+            return temperatures::hot;
         case temperature_flag::TEMP_FRIDGE:
             return temperatures::fridge;
         case temperature_flag::TEMP_FREEZER:
@@ -10352,6 +10358,8 @@ static units::temperature clip_by_temperature_flag( units::temperature temperatu
             return std::min( temperature, temperatures::freezer );
         case temperature_flag::TEMP_HEATER:
             return std::max( temperature, temperatures::normal );
+        case temperature_flag::TEMP_INCUBATOR:
+            return std::max( temperature, temperatures::hot );
         case temperature_flag::TEMP_ROOT_CELLAR:
             return temperatures::root_cellar;
         default:
