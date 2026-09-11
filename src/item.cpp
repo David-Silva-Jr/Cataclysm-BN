@@ -2120,7 +2120,7 @@ void item::food_info( const item *food_item, std::vector<iteminfo> &info,
                     case temperature_flag::TEMP_NORMAL:
                     case temperature_flag::TEMP_INCUBATOR: {
                         temperature_description = _( "* Current storage conditions <bad>accelerate</bad> this "
-                                                    "item\'s decay. It will go bad in <info>%s</info>." );
+                                                     "item\'s decay. It will go bad in <info>%s</info>." );
                     }
                     case temperature_flag::TEMP_HEATER: {
                         temperature_description = _( "* Current storage conditions <bad>do not</bad> "
