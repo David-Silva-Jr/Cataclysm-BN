@@ -10,7 +10,7 @@
   "craft_inherit": true, // Items made with it will keep this flag
   "requires_flag": true, // Used by vehicle part flags, requires another part with this ID on the tile
   "inherit": true, // Item mods will pass this flag down to the item
-  "use_method": "USE_METHOD_ID", // Use method this flag injects when present on a mod but not the base item
+  "use_method": "USE_METHOD_ID", // This flag gives the connected item this use method if it doesn't already have it
   "tag": "string" // Translatable string appended to the item's UI display name, if the item has this flag
 }
 ```
@@ -24,13 +24,7 @@
 - Many of the flags intended for one category or item type, can be used in other categories or item
   types. Experiment to see where else flags can be used.
 - Offensive and defensive flags can be used on any item type that can be wielded.
-- `use_method` lets a flag inject a use method (an activate-menu action) into an item that does not
-  have one of its own. When the flag is present on an attached mod (gun or tool) but not on the base
-  item, the named use method is added to the item's activate menu. The value must be a valid use
-  method ID (e.g. `TOGGLE_UPS_CHARGING`). For the flag to propagate from the mod to the item it must
-  also be marked `"inherit": true`. Example: `ADD_UPS_TOGGLE` declares
-  `"use_method": "TOGGLE_UPS_CHARGING"` so the UPS battery conversion mod adds a UPS-charging toggle
-  to tools like the electrohack that have no activate menu of their own.
+- `use_method` needs to be on the item, so if it's on a mod flag, that flag also needs to set inherit to true.
 
 ## Inheritance
 
