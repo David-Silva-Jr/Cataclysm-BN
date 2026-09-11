@@ -9131,33 +9131,29 @@ bool item::has_use() const
 auto item::get_flag_injected_use_methods() const -> std::map<std::string, use_function>
 {
     auto result = std::map<std::string, use_function> {};
-    // Collect flags from the item itself and its attached mods (guns or tools).
     auto candidate_flags = item_tags;
     auto mods = is_gun() ? gunmods() : toolmods();
+
+    // There's similar logic in has_flag, but it uses scary recursion and a nested function. Also, 
+    // it checks if a specific flag exists on an item, where this method GETS all the flags on
+    // an item
     for( const item *mod : mods ) {
-        // A mod's flags live on its type (e.g. "flags": [ ... ] in the TOOLMOD JSON),
-        // not on the mod instance. Mirror item::has_flag, which checks both the mod's
-        // type flags and its instance flags.
         for( const flag_id &f : mod->type->item_tags ) {
-            if( json_flag::get( f.str() ).inherit() ) {
+            if( f->inherit() ) {
                 candidate_flags.insert( f );
             }
         }
         for( const flag_id &f : mod->item_tags ) {
-            if( json_flag::get( f.str() ).inherit() ) {
+            if( f->inherit() ) {
                 candidate_flags.insert( f );
             }
         }
     }
     for( const flag_id &f : candidate_flags ) {
-        if( type->has_flag( f ) ) {
+        if( type->has_flag( f ) || f->use_method().empty() ) {
             continue;
         }
-        const auto &def = json_flag::get( f.str() );
-        if( def.use_method().empty() ) {
-            continue;
-        }
-        result[def.use_method()] = item_controller->usage_from_string( def.use_method() );
+        result[f->use_method()] = item_controller->usage_from_string( f->use_method() );
     }
     return result;
 }
