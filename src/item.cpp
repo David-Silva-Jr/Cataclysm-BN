@@ -75,6 +75,7 @@
 #include "magic/magic.h"
 #include "map.h"
 #include "mapbuffer.h"
+#include "mapdata.h"
 #include "martialarts.h"
 #include "material.h"
 #include "melee.h"
@@ -829,6 +830,7 @@ auto item::prepare_for_location_removal() -> void
                 .root_cellar = tile->get_ter() == t_rootcellar,
                 .fridge = furn.has_flag( TFLAG_FRIDGE ),
                 .freezer = furn.has_flag( TFLAG_FREEZER ),
+                .incubator = furn.has_flag( TFLAG_INCUBATOR ),
             } );
         } else {
             storage_temperature = rot::temp::for_location( get_map(), *this );
