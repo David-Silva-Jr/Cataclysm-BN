@@ -10142,8 +10142,8 @@ auto item::actualize_rot( detached_ptr<item> &&self,
 
 // ALL ROT HAPPENS HERE (unless I missed some)
 auto item::do_rot_step( detached_ptr<item> &&self,
-                                 const rot_context &context,
-                                 const bool seals, player *carrier ) -> detached_ptr<item>
+                        const rot_context &context,
+                        const bool seals, player *carrier ) -> detached_ptr<item>
 {
     auto removed_snapshot = self->is_comestible() || self->is_corpse() ?
                             item::spawn( *self ) : detached_ptr<item>();
@@ -10157,9 +10157,9 @@ auto item::do_rot_step( detached_ptr<item> &&self,
     if( !result && removed_snapshot ) {
         map &here = get_map();
         MAPBUFFER_REGISTRY.get( here.get_bound_dimension() ).handle_rotten_away_item(
-            context.position, *removed_snapshot, {
-                .mode = mapbuffer_lookup_mode::resident_only,
-            } );
+        context.position, *removed_snapshot, {
+            .mode = mapbuffer_lookup_mode::resident_only,
+        } );
     }
     return result;
 }
