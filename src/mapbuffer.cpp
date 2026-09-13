@@ -276,24 +276,30 @@ auto rotten_item_spawn( const actualize_tile_options &options, const item &sourc
         return;
     }
 
-    const auto chance = static_cast<int>( comestible->rot_spawn_chance *
-                                          get_option<float>( "CARRION_SPAWNRATE" ) );
-    if( rng( 0, 100 ) >= chance ) {
-        return;
+    bool spawned = false;
+    for( int i = 0; i < source.count(); i++ ) {
+        const auto chance = static_cast<int>( comestible->rot_spawn_chance *
+                                              get_option<float>( "CARRION_SPAWNRATE" ) );
+        if( rng( 0, 100 ) >= chance ) {
+            continue;
+        }
+
+        const auto spawn_details = MonsterGroupManager::GetResultFromGroup( comestible->rot_spawn );
+        const auto disposition = source.has_own_flag( flag_SPAWN_FRIENDLY ) ?
+                                 spawn_disposition::SpawnDisp_Pet :
+                                 spawn_disposition::SpawnDisp_Default;
+        add_spawn_to_submap( {
+            .sm = options.sm,
+            .local = options.local,
+            .type = spawn_details.name,
+            .disposition = disposition,
+        } );
+
+        spawned = true;
     }
 
-    const auto spawn_details = MonsterGroupManager::GetResultFromGroup( comestible->rot_spawn );
-    const auto disposition = source.has_own_flag( flag_SPAWN_FRIENDLY ) ?
-                             spawn_disposition::SpawnDisp_Pet :
-                             spawn_disposition::SpawnDisp_Default;
-    add_spawn_to_submap( {
-        .sm = options.sm,
-        .local = options.local,
-        .type = spawn_details.name,
-        .disposition = disposition,
-    } );
-
-    if( !options.active_bubble_pos || g == nullptr || !g->u.sees( *options.active_bubble_pos ) ) {
+    if( !spawned || !options.active_bubble_pos || g == nullptr ||
+        !g->u.sees( *options.active_bubble_pos ) ) {
         return;
     }
 
