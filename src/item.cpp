@@ -75,6 +75,7 @@
 #include "magic/magic.h"
 #include "map.h"
 #include "mapbuffer.h"
+#include "mapbuffer_registry.h"
 #include "mapdata.h"
 #include "martialarts.h"
 #include "material.h"
@@ -10152,11 +10153,25 @@ auto item::actualize_rot( detached_ptr<item> &&self,
         return std::move( self );
     }
     if( self->goes_bad() ) {
-        return process_rot( std::move( self ), {
+        const auto can_spawn_rot = self->is_comestible();
+        const auto can_decay_corpse = self->is_corpse();
+        auto removed_snapshot = can_spawn_rot || can_decay_corpse ?
+                                item::spawn( *self ) : detached_ptr<item>();
+
+        auto result = process_rot( std::move( self ), {
             .seals = seals,
             .carrier = nullptr,
             .context = context,
         } );
+
+        if ( !result && removed_snapshot ) {
+            map& here = get_map();
+            MAPBUFFER_REGISTRY.get( here.get_bound_dimension() ).handle_rotten_away_item(
+                context.position, *removed_snapshot, {
+                    .mode = mapbuffer_lookup_mode::resident_only,
+                } );
+        };
+        return result;
     } else if( self->type->container && self->type->container->preserves ) {
         // Containers like tin cans preserve all items inside; they do not rot at all.
         return std::move( self );
