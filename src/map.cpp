@@ -1,43 +1,19 @@
 #include "map.h"
 
-#include "active_tile_data.h"
-#include "faction.h"
-#include "mapdata.h"
-#include "mapgen_async.h"
-
-#include <algorithm>
-#include <array>
-#include <cassert>
-#include <climits>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <iterator>
-#include <ranges>
-#include <limits>
-#include <mutex>
-#include <shared_mutex>
-#include <optional>
-#include <ostream>
-#include <queue>
-#include <type_traits>
-#include <unordered_map>
-#include <variant>
-#include <vector>
-
 #include "active_item_cache.h"
+#include "active_tile_data.h"
 #include "ammo.h"
 #include "ammo_effect.h"
 #include "artifact.h"
 #include "avatar.h"
 #include "bodypart.h"
+#include "cached_options.h"
 #include "calendar.h"
+#include "cata_cartesian_product.h"
+#include "cata_utility.h"
 #include "catalua.h"
 #include "catalua_hooks.h"
 #include "catalua_sol.h"
-#include "cata_cartesian_product.h"
-#include "cata_utility.h"
-#include "cached_options.h"
 #include "character.h"
 #include "character_id.h"
 #include "clzones.h"
@@ -56,12 +32,13 @@
 #include "event_bus.h"
 #include "explosion.h"
 #include "explosion_queue.h"
+#include "faction.h"
 #include "field.h"
 #include "field_type.h"
 #include "flag.h"
 #include "flat_set.h"
-#include "fragment_cloud.h"
 #include "fluid_grid.h"
+#include "fragment_cloud.h"
 #include "fungal_effects.h"
 #include "game.h"
 #include "game_constants.h"
@@ -77,14 +54,17 @@
 #include "itype.h"
 #include "iuse.h"
 #include "iuse_actor.h"
+#include "legacy_pathfinding.h"
 #include "lightmap.h"
 #include "line.h"
 #include "map/utils/map_functions.h"
+#include "map_feature_descriptions.h"
 #include "map_iterator.h"
 #include "map_memory.h"
 #include "map_selector.h"
 #include "mapbuffer.h"
-#include "map_feature_descriptions.h"
+#include "mapdata.h"
+#include "mapgen_async.h"
 #include "math_defines.h"
 #include "memory_fast.h"
 #include "messages.h"
@@ -97,12 +77,11 @@
 #include "options.h"
 #include "output.h"
 #include "overmapbuffer.h"
-#include "legacy_pathfinding.h"
 #include "player.h"
 #include "point.h"
 #include "point_float.h"
-#include "projectile.h"
 #include "profile.h"
+#include "projectile.h"
 #include "rng.h"
 #include "rot.h"
 #include "safe_reference.h"
@@ -119,14 +98,34 @@
 #include "trap.h"
 #include "ui_manager.h"
 #include "value_ptr.h"
-#include "veh_type.h"
-#include "vehicle.h"
-#include "vehicle_part.h"
+#include "vehicle/veh_type.h"
+#include "vehicle/vehicle.h"
+#include "vehicle/vehicle_part.h"
+#include "vehicle/vpart_position.h"
+#include "vehicle/vpart_range.h"
 #include "visitable.h"
-#include "vpart_position.h"
-#include "vpart_range.h"
-#include "weather.h"
+#include "weather/weather.h"
 #include "weighted_list.h"
+
+#include <algorithm>
+#include <array>
+#include <cassert>
+#include <climits>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include <iterator>
+#include <limits>
+#include <mutex>
+#include <optional>
+#include <ostream>
+#include <queue>
+#include <ranges>
+#include <shared_mutex>
+#include <type_traits>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 
 #if defined( CATA_SDL )
 #include "compute/compute_backend.h"
@@ -4726,20 +4725,19 @@ bash_results map::bash_ter_furn( const tripoint_bub_ms &p, const bash_params &pa
             }
         }
         // Hard impacts have a chance to dislodge targets perching above
-        if( params.strength >= smin / 2 && one_in( smin / 2 ) ) {
-            tripoint_bub_ms above( p.xy(), p.z() + 1 );
-            Character *character = g->critter_at<Character>( above );
-            if( has_flag( TFLAG_UNSTABLE, above ) && character != nullptr ) {
-                character->add_msg_if_player( m_warning,
-                                              _( "You feel the ground beneath you shake from the impact!" ) );
+        tripoint_bub_ms above( p.xy(), p.z() + 1 );
+        Character *character = g->critter_at<Character>( above );
+        // Only warn player and roll for it if we actually have any chance at triggering it
+        if( has_flag( TFLAG_UNSTABLE, above ) && character != nullptr &&
+            character->stability_roll() < params.strength ) {
+            character->add_msg_if_player( m_warning,
+                                          _( "You feel the ground beneath you shake from the impact!" ) );
 
-                if( character->stability_roll() < rng( 1, params.strength - ( smin / 2 ) ) ) {
-                    character->add_msg_player_or_npc( m_bad, _( "You lose your balance!" ),
-                                                      _( "<npcname> loses their balance!" ) );
+            if( character->stability_roll() < rng( 1, params.strength ) && one_in( 10 ) ) {
+                character->add_msg_player_or_npc( m_bad, _( "You lose your balance!" ),
+                                                  _( "<npcname> loses their balance!" ) );
 
-                    g->fling_creature( character, rng_float( 0_degrees, 360_degrees ), 10 );
-                }
-
+                g->fling_creature( character, rng_float( 0_degrees, 360_degrees ), 10 );
             }
         }
     } else {

@@ -3241,7 +3241,7 @@
     "type": "furniture",
     "abstract": "f_incubator_base",
     "name": "abstract incubator",
-    "looks_like": "f_incubator",
+    "looks_like": "f_shaker",
     "symbol": "H",
     "description": "Abstract furniture.  If you see this, something went wrong.",
     "color": "brown",
