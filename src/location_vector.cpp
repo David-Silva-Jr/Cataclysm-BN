@@ -412,7 +412,7 @@ void location_vector<T>::remove_with( std::function < detached_ptr<T>( detached_
     }
     size_t i = 0;
     for( auto it = contents.begin(); it != contents.end(); ) {
-        item &as_item = **it;
+        item *original_item = *it;
         location<T> *saved_loc = ( *it )->loc;
         ( *it )->prepare_for_location_removal();
         ( *it )->remove_location();
@@ -430,14 +430,13 @@ void location_vector<T>::remove_with( std::function < detached_ptr<T>( detached_
             it++;
             i++;
         } else {
-            if( as_item.saved_loc == nullptr ) {
+            if ( i < contents.size() && contents[i] == original_item ) {
+                it = contents.erase( contents.begin() + i );
+            } else {
                 if( i >= contents.size() ) {
                     break;
                 }
                 it = contents.begin() + i;
-            } else {
-                as_item.saved_loc = nullptr;
-                it = contents.erase( it );
             }
         }
     }
